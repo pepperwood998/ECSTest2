@@ -25,5 +25,6 @@ public class GraveyardBaker : Baker<GraveyardAuthoring>
         {
             Value = Unity.Mathematics.Random.CreateFromIndex(authoring.RandomSeed),
         });
+        AddComponent<ZombieSpawnPoints>(graveyardEntity);
     }
 }

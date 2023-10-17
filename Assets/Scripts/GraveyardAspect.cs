@@ -12,17 +12,23 @@ namespace Pepperwood
         private LocalTransform transform => transformRef.ValueRO;
         private readonly RefRO<GraveyardProperties> graveyardProperties;
         private readonly RefRW<GraveyardRandom> graveyardRandom;
+        private readonly RefRW<ZombieSpawnPoints> zombieSpawnPoints;
 
         public int NumberTombstoneToSpawn => graveyardProperties.ValueRO.NumberTombstonesToSpawn;
         public Entity TombstonePrefab => graveyardProperties.ValueRO.TombstonePrefab;
+        public bool ZombieSpawnPointInitialized()
+        {
+            return zombieSpawnPoints.ValueRO.Value.IsCreated && ZombieSpawnPointCount > 0;
+        }
+        private int ZombieSpawnPointCount => zombieSpawnPoints.ValueRO.Value.Value.Value.Length;
 
         public LocalTransform GetRandomTombstoneTransform()
         {
             return new LocalTransform
             {
                 Position = GetRandomPosition(),
-                Rotation = quaternion.identity,
-                Scale = 1f,
+                Rotation = GetRandomRotation(),
+                Scale = GetRandomScale(0.5f),
             };
         }
 
@@ -47,5 +53,8 @@ namespace Pepperwood
             z = graveyardProperties.ValueRO.FieldDimensions.y * 0.5f
         };
         private const float BRAIN_SAFETY_RADIUS_SQ = 100;
+
+        private quaternion GetRandomRotation() => quaternion.RotateY(graveyardRandom.ValueRW.Value.NextFloat(-0.25f, 0.25f));
+        private float GetRandomScale(float min) => graveyardRandom.ValueRW.Value.NextFloat(min, 1f);
     }
 }
